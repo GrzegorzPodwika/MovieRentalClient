@@ -9,7 +9,6 @@ import data_holders.DateHolder;
 import model.Movie;
 import data_holders.MovieHolder;
 
-//TODO dalsza praca z tym kontrolorem
 public class RentDetailsController {
     @FXML public Label movieNameLabel;
     @FXML public Label movieRatingLabel;
