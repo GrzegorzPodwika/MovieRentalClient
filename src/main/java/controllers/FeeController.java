@@ -13,11 +13,15 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import model.Fee;
 import model.FeeData;
 import data_holders.UserHolder;
+import other.ServerStateChangeListener;
+import other.ServerTask;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 public class FeeController {
@@ -46,6 +50,7 @@ public class FeeController {
     private Integer userId;
     private double totalAmountToPay = 0.0;
 
+
     @FXML
     public void initialize() {
         initMovieService();
@@ -53,6 +58,7 @@ public class FeeController {
         fetchUserIdFromUserHolder();
         fetchAllUserFeesFromDb();
     }
+
 
     private void initMovieService() {
         movieService = retrofitClient.getRetrofitClient().create(MovieService.class);

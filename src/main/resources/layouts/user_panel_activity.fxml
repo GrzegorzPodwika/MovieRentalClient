@@ -66,5 +66,13 @@
       </Button>
       <StackPane fx:id="bodyStackPane" layoutX="240.0" layoutY="110.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="240.0" AnchorPane.rightAnchor="0.0">
       </StackPane>
+      <Label fx:id="serverLabel" layoutX="346.0" layoutY="10.0" textFill="RED">
+         <font>
+            <Font size="20.0" />
+         </font>
+         <padding>
+            <Insets left="20.0" />
+         </padding>
+      </Label>
    </children>
 </AnchorPane>

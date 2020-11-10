@@ -18,6 +18,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import model.*;
+import other.ServerStateChangeListener;
+import other.ServerTask;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -27,57 +29,65 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import static other.Constants.RENT_DETAILS_DIALOG;
 
 public class RentController {
 
-    @FXML
-    public ComboBox<String> filterMovie;
-    @FXML
-    public String allFilter;
-    @FXML
-    public String actionFilter;
-    @FXML
-    public String comedyFilter;
-    @FXML
-    public String dramaFilter;
-    @FXML
-    public String horrorFilter;
-    @FXML
-    public String romanceFilter;
+    @FXML public ComboBox<String> filterMovie;
+    @FXML public String allFilter;
+    @FXML public String actionFilter;
+    @FXML public String comedyFilter;
+    @FXML public String dramaFilter;
+    @FXML public String horrorFilter;
+    @FXML public String romanceFilter;
 
-    @FXML
-    public TableView<MovieData> moviesTableView;
-    @FXML
-    public TableColumn<MovieData, Integer> tableId;
-    @FXML
-    public TableColumn<MovieData, String> tableName;
-    @FXML
-    public TableColumn<MovieData, String> tableGenre;
-    @FXML
-    public TableColumn<MovieData, String> tableYear;
-    @FXML
-    public TableColumn<MovieData, Double> tableRating;
-    @FXML
-    public TableColumn<MovieData, Double> tableFee;
+    @FXML public TableView<MovieData> moviesTableView;
+    @FXML public TableColumn<MovieData, Integer> tableId;
+    @FXML public TableColumn<MovieData, String> tableName;
+    @FXML public TableColumn<MovieData, String> tableGenre;
+    @FXML public TableColumn<MovieData, String> tableYear;
+    @FXML public TableColumn<MovieData, Double> tableRating;
+    @FXML public TableColumn<MovieData, Double> tableFee;
 
-    public TextField searchLabel;
-    public Label errorLabel;
+    @FXML public TextField searchLabel;
+    @FXML public Label errorLabel;
+    @FXML public Button searchButton;
+    @FXML public Button rentMovieButton;
 
     private final ObservableList<MovieData> observableMovies = FXCollections.observableArrayList();
     private final RetrofitClient retrofitClient = new RetrofitClient();
     private MovieService movieService;
     private List<MovieData> listOfMovieData;
     private Integer userId;
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     @FXML
     public void initialize() {
+        initObservationOfServerAvailability();
         initMovieService();
         initTableColumns();
         fetchUserIdFromUserHolder();
         fetchAllMoviesFromDb();
+    }
+
+    private void initObservationOfServerAvailability() {
+        executorService.execute(new ServerTask(new ServerStateChangeListener() {
+            @Override
+            public void serverStateAvailable() {
+                searchButton.setDisable(false);
+                rentMovieButton.setDisable(false);
+            }
+
+            @Override
+            public void serverStateNotAvailable() {
+                searchButton.setDisable(true);
+                rentMovieButton.setDisable(true);
+            }
+        }));
     }
 
     private void initMovieService() {

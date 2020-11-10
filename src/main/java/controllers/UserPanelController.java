@@ -10,6 +10,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 import other.ClockTask;
+import other.ServerStateChangeListener;
+import other.ServerTask;
 
 import java.io.IOException;
 import java.time.LocalTime;
@@ -25,9 +27,10 @@ public class UserPanelController implements FlowController {
 
     @FXML public StackPane bodyStackPane;
     @FXML public Label clockLabel;
+    @FXML public Label serverLabel;
 
     private MainController mainController;
-    private ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private ExecutorService executorService = Executors.newFixedThreadPool(2);
 
     @Override
     public void setMainController(MainController mainController) {
@@ -38,9 +41,18 @@ public class UserPanelController implements FlowController {
     @FXML
     public void initialize() {
         initClock();
-
+        initObservationOfServerAvailability();
         setIntoBodyLayout(RENT_FRAGMENT);
     }
+
+    private void initClock() {
+        executorService.execute(new ClockTask(clockLabel));
+    }
+
+    private void initObservationOfServerAvailability() {
+        executorService.execute(new ServerTask(serverLabel));
+    }
+
 
     private void setIntoBodyLayout(String fragment) {
         String fullPath = "layouts/" + fragment;
@@ -54,10 +66,6 @@ public class UserPanelController implements FlowController {
 
         bodyStackPane.getChildren().clear();
         bodyStackPane.getChildren().add(pane);
-    }
-
-    private void initClock() {
-        executorService.execute(new ClockTask(clockLabel));
     }
 
 

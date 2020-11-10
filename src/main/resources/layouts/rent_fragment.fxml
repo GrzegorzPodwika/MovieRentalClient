@@ -63,12 +63,12 @@
                         </FXCollections>
                     </items>
                 </ComboBox>
-                <Button mnemonicParsing="false" onAction="#onSearchClicked" prefHeight="30.0" prefWidth="135.0" style="-fx-background-color: #6200EA;" text="Search" textFill="WHITE">
+                <Button fx:id="searchButton" mnemonicParsing="false" onAction="#onSearchClicked" prefHeight="30.0" prefWidth="135.0" style="-fx-background-color: #6200EA;" text="Search" textFill="WHITE">
                     <graphic>
                         <FontAwesomeIconView fill="WHITE" glyphName="SEARCH" />
                     </graphic>
                 </Button>
-                <Button mnemonicParsing="false" onAction="#onRentMovieClicked" prefHeight="30.0" prefWidth="127.0" style="-fx-background-color: #6200EA;" text="Rent movie" textFill="WHITE">
+                <Button fx:id="rentMovieButton" mnemonicParsing="false" onAction="#onRentMovieClicked" prefHeight="30.0" prefWidth="127.0" style="-fx-background-color: #6200EA;" text="Rent movie" textFill="WHITE">
                     <graphic>
                         <FontAwesomeIconView fill="WHITE" glyphName="MONEY" />
                     </graphic>
