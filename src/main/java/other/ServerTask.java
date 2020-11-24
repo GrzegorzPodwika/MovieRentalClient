@@ -9,6 +9,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import java.util.concurrent.Semaphore;
+
 public class ServerTask implements Runnable {
     private final RetrofitClient retrofitClient = new RetrofitClient();
     private final AvailabilityService service =
@@ -16,6 +18,7 @@ public class ServerTask implements Runnable {
 
     private Label serverLabel;
     private ServerStateChangeListener serverListener;
+    private final Semaphore mutex = new Semaphore(1);
 
     public ServerTask(Label serverLabel) {
         this.serverLabel = serverLabel;
@@ -44,7 +47,14 @@ public class ServerTask implements Runnable {
 
                     if (serverLabel != null) {
                         Platform.runLater(() -> {
-                            serverLabel.setText("");
+                            try {
+                                mutex.acquire();
+                                serverLabel.setText("");
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            } finally {
+                                mutex.release();
+                            }
                         });
                     }
                 }
@@ -56,9 +66,18 @@ public class ServerTask implements Runnable {
                     }
 
                     if (serverLabel != null) {
+
                         Platform.runLater(() -> {
-                            serverLabel.setText("Server is not available now.");
+                            try {
+                                mutex.acquire();
+                                serverLabel.setText("Server is not available now.");
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            } finally {
+                                mutex.release();
+                            }
                         });
+
                     }
                 }
             });

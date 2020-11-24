@@ -3,6 +3,7 @@ package controllers;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
@@ -30,7 +31,7 @@ public class UserPanelController implements FlowController {
     @FXML public Label serverLabel;
 
     private MainController mainController;
-    private ExecutorService executorService = Executors.newFixedThreadPool(2);
+    private final ExecutorService executorService = Executors.newFixedThreadPool(2);
 
     @Override
     public void setMainController(MainController mainController) {
@@ -52,7 +53,6 @@ public class UserPanelController implements FlowController {
     private void initObservationOfServerAvailability() {
         executorService.execute(new ServerTask(serverLabel));
     }
-
 
     private void setIntoBodyLayout(String fragment) {
         String fullPath = "layouts/" + fragment;

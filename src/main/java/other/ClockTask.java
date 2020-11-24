@@ -5,11 +5,13 @@ import javafx.scene.control.Label;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.Semaphore;
 
 public class ClockTask implements Runnable{
 
-    private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-    private Label clockLabel;
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+    private final Label clockLabel;
+    private final Semaphore mutex = new Semaphore(1);
 
     public ClockTask(Label clockLabel) {
         this.clockLabel = clockLabel;
@@ -23,10 +25,20 @@ public class ClockTask implements Runnable{
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
             LocalTime currentTime = LocalTime.now();
             final String time = currentTime.format(dateTimeFormatter);
             Platform.runLater( () -> {
-                clockLabel.setText(time);
+                try {
+                    mutex.acquire();
+                    //System.out.println("MUTEX LOCKED");
+                    clockLabel.setText(time);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } finally {
+                    mutex.release();
+                    //System.out.println("MUTEX released");
+                }
             });
         }
     }
