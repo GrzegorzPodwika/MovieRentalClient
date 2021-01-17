@@ -19,10 +19,6 @@ import static org.junit.Assert.*;
 public class RegisterControllerTest extends ApplicationTest {
     private RegisterController registerController;
 
-    @Before
-    public void setUp() throws Exception {
-    }
-
     @Override
     public void start(Stage stage) throws Exception {
         FXMLLoader loader = new FXMLLoader(RegisterController.class.getClassLoader().getResource("layouts/" + Constants.REGISTER_LAYOUT));

@@ -1,8 +1,8 @@
 package other;
 
 import api.AvailabilityService;
-import api.RetrofitClient;
 import api.ServerResponse;
+import api.ServiceGenerator;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 import retrofit2.Call;
@@ -12,9 +12,7 @@ import retrofit2.Response;
 import java.util.concurrent.Semaphore;
 
 public class ServerTask implements Runnable {
-    private final RetrofitClient retrofitClient = new RetrofitClient();
-    private final AvailabilityService service =
-            retrofitClient.getRetrofitClient().create(AvailabilityService.class);
+    private final AvailabilityService service = ServiceGenerator.createService(AvailabilityService.class);
 
     private Label serverLabel;
     private ServerStateChangeListener serverListener;

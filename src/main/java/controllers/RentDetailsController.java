@@ -43,7 +43,8 @@ public class RentDetailsController {
             return;
         }
 
-        if (rentDatePicker.getValue().isAfter(returnDatePicker.getValue())) {
+        if (rentDatePicker.getValue().isAfter(returnDatePicker.getValue())
+                || rentDatePicker.getValue().equals(returnDatePicker.getValue())) {
             errorEmptyDateLabel.setText("Zła data zwrotu!");
             return;
         }

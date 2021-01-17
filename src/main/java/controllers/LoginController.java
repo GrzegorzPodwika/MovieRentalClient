@@ -1,10 +1,8 @@
 package controllers;
 
-import api.MovieService;
-import api.RetrofitClient;
+import api.ServiceGenerator;
 import api.UserService;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -25,38 +23,27 @@ public class LoginController implements FlowController {
 
     @FXML
     public TextField userName;
-
     @FXML
     public PasswordField userPassword;
-
     @FXML
     public Button signInButton;
-
     @FXML
     public Button signUpButton;
-
     @FXML
     public Button exitButton;
-
     @FXML
     public Label responseLabel;
-
     @FXML
     public Label errorLabel;
 
     private MainController mainController;
-    private final RetrofitClient retrofitClient = new RetrofitClient();
-    private UserService userService;
+    private final UserService userService = ServiceGenerator.createService(UserService.class);
 
     @Override
     public void setMainController(MainController mainController) {
         this.mainController = mainController;
     }
 
-    @FXML
-    public void initialize() {
-        userService = retrofitClient.getRetrofitClient().create(UserService.class);
-    }
 
     public void onSignIn() {
         if (isUsernameOrPasswordEmpty()) {
@@ -75,8 +62,9 @@ public class LoginController implements FlowController {
         var username = userName.getText();
         var password = userPassword.getText();
         UserHolder userHolder = UserHolder.getINSTANCE();
+        User currentUser = new User(0, username, password);
 
-        var call = userService.loginUser(new User(0, username, password));
+        var call = userService.loginUser(currentUser);
         call.enqueue(new Callback<>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -87,13 +75,13 @@ public class LoginController implements FlowController {
                         if (stringResponse.equals("ERROR")) {
                             Platform.runLater(
                                     () -> {
-                                        errorLabel.setText("Error has occurred");
+                                        errorLabel.setText("Blędne dane logowania");
                                     }
                             );
                         } else {
                             int userId = Integer.parseInt(stringResponse);
-                            userHolder.setUserId(userId);
-                            System.out.println("UserId is get = " + userId);
+                            currentUser.setUserId(userId);
+                            userHolder.setUser(currentUser);
                             Platform.runLater(
                                     () -> {
                                         navigateToUserPanelActivity();

@@ -1,7 +1,7 @@
 package controllers;
 
-import api.RetrofitClient;
 import api.ServerResponse;
+import api.ServiceGenerator;
 import api.UserService;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -24,10 +24,6 @@ import static other.Constants.*;
 
 public class RegisterController implements FlowController {
 
-    private MainController mainController;
-    private final RetrofitClient retrofitClient = new RetrofitClient();
-    private UserService userService;
-
     @FXML public ImageView GoBackButton;
     @FXML public TextField userName;
     @FXML public PasswordField userPassword;
@@ -36,9 +32,12 @@ public class RegisterController implements FlowController {
     @FXML public Text passwordEquality;
     @FXML public Label errorLabel;
 
+    private MainController mainController;
+    private final UserService userService = ServiceGenerator.createService(UserService.class);
+
+
     @FXML
     public void initialize() {
-        userService = retrofitClient.getRetrofitClient().create(UserService.class);
 
         userConfirmPassword.textProperty().addListener(((observable, oldValue, newValue) -> {
             if (userPassword.getText().equals(newValue)) {

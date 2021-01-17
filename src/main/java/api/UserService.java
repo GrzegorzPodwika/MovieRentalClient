@@ -8,6 +8,8 @@ import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.POST;
 
+import java.util.Optional;
+
 public interface UserService {
 
     @POST("/addUser")
@@ -15,4 +17,7 @@ public interface UserService {
 
     @POST("/loginUser")
     Call<ResponseBody> loginUser(@Body User user);
+
+    @POST("/getUser")
+    Call<Optional<User>> get(@Body Integer userId);
 }

@@ -1,12 +1,13 @@
 package model;
 
 public class Movie {
-    private final Integer movieId;
-    private final String name;
-    private final String genre;
-    private final String year;
-    private final double rating;
-    private final double feePerDay;
+    private Integer movieId;
+
+    private String name;
+    private String genre;
+    private String year;
+    private double rating;
+    private double feePerDay;
 
     public Movie(Integer movieId, String name, String genre, String year, double rating, double feePerDay) {
         this.movieId = movieId;
@@ -39,5 +40,29 @@ public class Movie {
 
     public double getFeePerDay() {
         return feePerDay;
+    }
+
+    public void setMovieId(Integer movieId) {
+        this.movieId = movieId;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setGenre(String genre) {
+        this.genre = genre;
+    }
+
+    public void setYear(String year) {
+        this.year = year;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
+    }
+
+    public void setFeePerDay(double feePerDay) {
+        this.feePerDay = feePerDay;
     }
 }

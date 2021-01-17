@@ -1,7 +1,9 @@
 package data_holders;
 
+import model.User;
+
 public class UserHolder {
-    private Integer userId;
+    private User user;
     private static final UserHolder INSTANCE = new UserHolder();
 
     private UserHolder() {}
@@ -10,11 +12,11 @@ public class UserHolder {
         return INSTANCE;
     }
 
-    public Integer getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setUser(User currentUser) {
+        this.user = currentUser;
     }
 }

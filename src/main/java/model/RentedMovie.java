@@ -8,68 +8,101 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import java.time.LocalDate;
 
 public class RentedMovie {
-    private int userId;
-    private int movieId;
-    private String rentDate;
-    private String returnDate;
+    private Integer rentId;
+
+    private User user;
+    private Movie movie;
+
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    private LocalDate rentDate;
+
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    private LocalDate returnDate;
+
     private double rentFee;
+    private boolean paid;
 
-    public RentedMovie(int userId, int movieId, String rentDate, String returnDate, double rentFee) {
-        this.userId = userId;
-        this.movieId = movieId;
+    public RentedMovie() {
+    }
+
+    public RentedMovie(Integer rentId, User user, Movie movie, LocalDate rentDate, LocalDate returnDate, double rentFee, boolean isPaid) {
+        this.rentId = rentId;
+        this.user = user;
+        this.movie = movie;
         this.rentDate = rentDate;
         this.returnDate = returnDate;
         this.rentFee = rentFee;
+        this.paid = isPaid;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public User getUser() {
+        return user;
     }
 
-    public void setMovieId(int movieId) {
-        this.movieId = movieId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public void setRentDate(String rentDate) {
-        this.rentDate = rentDate;
+    public Integer getRentId() {
+        return rentId;
     }
 
-    public void setReturnDate(String returnDate) {
-        this.returnDate = returnDate;
+    public void setRentId(Integer rent_id) {
+        this.rentId = rent_id;
     }
 
-    public void setRentFee(double rentFee) {
-        this.rentFee = rentFee;
+    public Movie getMovie() {
+        return movie;
     }
 
-    public int getUserId() {
-        return userId;
+    public void setMovie(Movie movie) {
+        this.movie = movie;
     }
 
-    public int getMovieId() {
-        return movieId;
-    }
-
-    public String getRentDate() {
+    public LocalDate getRentDate() {
         return rentDate;
     }
 
-    public String getReturnDate() {
+    public void setRentDate(LocalDate rent_date) {
+        this.rentDate = rent_date;
+    }
+
+    public LocalDate getReturnDate() {
         return returnDate;
+    }
+
+    public void setReturnDate(LocalDate return_date) {
+        this.returnDate = return_date;
     }
 
     public double getRentFee() {
         return rentFee;
     }
 
+    public void setRentFee(double rent_fee) {
+        this.rentFee = rent_fee;
+    }
+
+    public boolean isPaid() {
+        return paid;
+    }
+
+    public void setPaid(boolean paid) {
+        this.paid = paid;
+    }
+
     @Override
     public String toString() {
         return "RentedMovie{" +
-                "  userId=" + userId +
-                ", movieId=" + movieId +
+                "rentId=" + rentId +
+                ", user=" + user +
+                ", movie=" + movie +
                 ", rentDate=" + rentDate +
                 ", returnDate=" + returnDate +
                 ", rentFee=" + rentFee +
+                ", isPaid=" + paid +
                 '}';
     }
 }

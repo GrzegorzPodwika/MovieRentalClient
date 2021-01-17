@@ -1,25 +1,29 @@
 package api;
 
-import model.Fee;
 import model.Movie;
-import model.RentedMovie;
 import retrofit2.Call;
 import retrofit2.http.*;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MovieService {
 
+    @POST("/saveMovie")
+    Call<Integer> save(@Body Movie movie);
+
+    @POST("/updateMovie")
+    Call<Movie> update(@Body Movie movie);
+
+    @POST("/deleteMovie")
+    Call<Void> delete(@Body Movie movie);
+
+    @POST("/getMovie")
+    Call<Optional<Movie>> get(@Body Integer id);
+
     @GET("/getAllMovies")
-    Call<List<Movie>> getAllMovies();
+    Call<List<Movie>> getAll();
 
-    @GET("/movies")
+    @GET("/getAllMoviesByQuery")
     Call<List<Movie>> getAllMoviesByQuery(@Query("searchMovie") String searchMovie, @Query("genre") String genre );
-
-    @POST("/rentMovie")
-    Call<Integer> rentMovie(@Body RentedMovie rentedMovie);
-
-    @GET("/rentedMovies/{userId}")
-    Call<List<Fee>> getAllRentedMovies(@Path("userId") Integer userId);
-
 }

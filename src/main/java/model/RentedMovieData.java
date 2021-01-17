@@ -1,24 +1,28 @@
 package model;
 
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
-public class FeeData {
+public class RentedMovieData {
     private final SimpleIntegerProperty tableRentId;
     private final SimpleIntegerProperty tableMovieId;
     private final SimpleStringProperty tableMovieName;
     private final SimpleStringProperty tableRentDate;
     private final SimpleStringProperty tableReturnDate;
     private final SimpleDoubleProperty tableFee;
+    private final SimpleBooleanProperty tableIsPaid;
 
-    public FeeData(Integer tableRentId, Integer tableMovieId, String tableMovieName, String tableRentDate, String tableReturnDate, Double tableFee) {
+    public RentedMovieData(Integer tableRentId, Integer tableMovieId, String tableMovieName,
+                           String tableRentDate, String tableReturnDate, Double tableFee, boolean tableIsPaid) {
         this.tableRentId = new SimpleIntegerProperty(tableRentId);
         this.tableMovieId = new SimpleIntegerProperty(tableMovieId);
         this.tableMovieName = new SimpleStringProperty(tableMovieName);
         this.tableRentDate = new SimpleStringProperty(tableRentDate);
         this.tableReturnDate = new SimpleStringProperty(tableReturnDate);
         this.tableFee = new SimpleDoubleProperty(tableFee);
+        this.tableIsPaid = new SimpleBooleanProperty(tableIsPaid);
     }
 
     public int getTableRentId() {
@@ -91,5 +95,21 @@ public class FeeData {
 
     public void setTableFee(Double tableFee) {
         this.tableFee.set(tableFee);
+    }
+
+    public void setTableFee(double tableFee) {
+        this.tableFee.set(tableFee);
+    }
+
+    public boolean isTableIsPaid() {
+        return tableIsPaid.get();
+    }
+
+    public SimpleBooleanProperty tableIsPaidProperty() {
+        return tableIsPaid;
+    }
+
+    public void setTableIsPaid(boolean tableIsPaid) {
+        this.tableIsPaid.set(tableIsPaid);
     }
 }

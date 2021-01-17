@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.text.Font?>
+<?import de.jensd.fx.glyphs.fontawesome.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="620.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.FeeController">
    <children>
-      <TableView fx:id="paymentHistoryTable" prefHeight="570.0" stylesheets="@../JavaFX_custom_tableview.css" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.rowIndex="1">
+      <Button fx:id="buttonPayReservation" mnemonicParsing="false" onAction="#onPayReservationClick" prefHeight="32.0" prefWidth="165.0" style="-fx-background-color: #6200EA;" text="Opłać rezerwację" textFill="WHITE" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="8.0">
+         <graphic>
+            <FontAwesomeIconView fill="WHITE" glyphName="MONEY" size="18" />
+         </graphic></Button>
+      <TableView fx:id="paymentHistoryTable" prefHeight="520.0" stylesheets="@../JavaFX_custom_tableview.css" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0" GridPane.rowIndex="1">
         <columns>
           <TableColumn fx:id="tableRentId" prefWidth="75.0" text="rent_id" />
           <TableColumn fx:id="tableMovieId" prefWidth="75.0" text="movie_id" />
@@ -19,6 +20,7 @@
             <TableColumn fx:id="tableRentDate" prefWidth="75.0" text="rent_date" />
             <TableColumn fx:id="tableReturnDate" prefWidth="75.0" text="return_date" />
             <TableColumn fx:id="tableFee" prefWidth="75.0" text="fee" />
+            <TableColumn fx:id="tableIsPaid" prefWidth="75.0" text="isPaid" />
         </columns>
          <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

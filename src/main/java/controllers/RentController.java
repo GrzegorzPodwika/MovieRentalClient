@@ -1,7 +1,8 @@
 package controllers;
 
 import api.MovieService;
-import api.RetrofitClient;
+import api.RentedMovieService;
+import api.ServiceGenerator;
 import data_holders.DateHolder;
 import data_holders.MovieHolder;
 import data_holders.UserHolder;
@@ -55,26 +56,21 @@ public class RentController {
     @FXML public TableColumn<MovieData, Double> tableFee;
 
     @FXML public TextField searchLabel;
-    @FXML public Label errorLabel;
-    @FXML public Button searchButton;
     @FXML public Button rentMovieButton;
 
-    private final RetrofitClient retrofitClient = new RetrofitClient();
-    private MovieService movieService;
+    private final MovieService movieService = ServiceGenerator.createService(MovieService.class);
+    private final RentedMovieService rentMovieService = ServiceGenerator.createService(RentedMovieService.class);
     private final ObservableList<MovieData> observableMovies = FXCollections.observableArrayList();
     private List<MovieData> listOfMovieData;
     private List<Movie> allMovies;
-    private Integer userId;
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     @FXML
     public void initialize() {
         initObservationOfServerAvailability();
-        initMovieService();
         initTableColumns();
         setUpChangeValueInComboBoxListener();
         setUpSearchLabelListener();
-        fetchUserIdFromUserHolder();
         fetchAllMoviesFromDb();
     }
 
@@ -82,20 +78,14 @@ public class RentController {
         executorService.execute(new ServerTask(new ServerStateChangeListener() {
             @Override
             public void serverStateAvailable() {
-                searchButton.setDisable(false);
                 rentMovieButton.setDisable(false);
             }
 
             @Override
             public void serverStateNotAvailable() {
-                searchButton.setDisable(true);
                 rentMovieButton.setDisable(true);
             }
         }));
-    }
-
-    private void initMovieService() {
-        movieService = retrofitClient.getRetrofitClient().create(MovieService.class);
     }
 
     private void initTableColumns() {
@@ -145,13 +135,8 @@ public class RentController {
         }
     }
 
-    private void fetchUserIdFromUserHolder() {
-        UserHolder userHolder = UserHolder.getINSTANCE();
-        userId = userHolder.getUserId();
-    }
-
     private void fetchAllMoviesFromDb() {
-        var moviesCall = movieService.getAllMovies();
+        var moviesCall = movieService.getAll();
         moviesCall.enqueue(new Callback<List<Movie>>() {
             @Override
             public void onResponse(Call<List<Movie>> call, Response<List<Movie>> response) {
@@ -166,9 +151,6 @@ public class RentController {
                         );
                     } else {
                         System.out.println("Allmovies = null");
-                        Platform.runLater(
-                                () -> errorLabel.setText("Response is not successful.")
-                        );
                     }
                 }
             }
@@ -176,7 +158,6 @@ public class RentController {
             @Override
             public void onFailure(Call<List<Movie>> call, Throwable throwable) {
                 System.out.println("Error has occurred" + throwable.getMessage());
-                Platform.runLater(() -> errorLabel.setText("Server is not available."));
             }
         });
     }
@@ -249,7 +230,7 @@ public class RentController {
             newStage.initModality(Modality.APPLICATION_MODAL);
 
             MovieHolder movieHolder = MovieHolder.getInstance();
-            Movie movie = transformToPlainMovie(selectedMovie);
+            Movie movie = allMovies.stream().filter(mov -> mov.getMovieId() == selectedMovie.getTableId()).findFirst().get();
             movieHolder.setMovie(movie);
 
             FXMLLoader loader = new FXMLLoader(this.getClass().getClassLoader().getResource(fullPath));
@@ -258,9 +239,6 @@ public class RentController {
             newStage.showAndWait();
 
             fetchChosenDates(movie);
-/*            RentDetailsController rentDetailsController = loader.getController();
-            rentDetailsController.setSelectedMovie(selectedMovie);
-            rentDetailsController.setCurrentStage(newStage);*/
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -290,15 +268,16 @@ public class RentController {
     }
 
     private void postRentMovie(Movie movie, LocalDate rentDate, LocalDate returnDate) {
-        // This method doesn't include last day, so we add 1 day to result.
+        // This method doesn't include last day, so we must add 1 day to result.
         long daysBetween = ChronoUnit.DAYS.between(rentDate, returnDate) + 1;
         double totalFee = daysBetween * movie.getFeePerDay();
         totalFee = roundOff(totalFee);
 
-        RentedMovie rentedMovie = new RentedMovie(userId, movie.getMovieId(), rentDate.format(DateTimeFormatter.ISO_LOCAL_DATE), returnDate.format(DateTimeFormatter.ISO_LOCAL_DATE), totalFee);
+        User activeUser = UserHolder.getINSTANCE().getUser();
+        RentedMovie rentedMovie = new RentedMovie(0, activeUser, movie, rentDate, returnDate, totalFee, false);
 
         try {
-            var response = movieService.rentMovie(rentedMovie).execute();
+            var response = rentMovieService.save(rentedMovie).execute();
             if (response.isSuccessful()) {
                 System.out.println("Response OK");
             } else {
@@ -323,7 +302,4 @@ public class RentController {
         alert.showAndWait();
     }
 
-    private Movie transformToPlainMovie(MovieData movieData) {
-        return new Movie(movieData.getTableId(), movieData.getTableName(), movieData.getTableGenre(), movieData.getTableYear(), movieData.getTableRating(), movieData.getTableFee());
-    }
 }
