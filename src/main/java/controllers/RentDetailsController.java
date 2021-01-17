@@ -19,17 +19,6 @@ public class RentDetailsController {
     public Button cancelButton;
     public Label errorEmptyDateLabel;
 
-/*    private MovieData selectedMovie;
-    private Stage currentStage;
-
-    public void setSelectedMovie(MovieData selectedMovie) {
-        this.selectedMovie = selectedMovie;
-    }
-
-    public void setCurrentStage(Stage currentStage) {
-        this.currentStage = currentStage;
-    }*/
-
     @FXML
     public void initialize() {
         MovieHolder movieHolder = MovieHolder.getInstance();
@@ -48,8 +37,14 @@ public class RentDetailsController {
 
     @FXML
     public void OnConfirmClicked() {
-        if (rentDatePicker.getValue() == null || returnDatePicker.getValue() == null) {
-            errorEmptyDateLabel.setText("Fill up date fields!");
+        if (rentDatePicker.getValue() == null || returnDatePicker.getValue() == null
+                || rentDatePicker.getValue().toString().isEmpty() || returnDatePicker.getValue().toString().isEmpty()) {
+            errorEmptyDateLabel.setText("Wypełnij daty!");
+            return;
+        }
+
+        if (rentDatePicker.getValue().isAfter(returnDatePicker.getValue())) {
+            errorEmptyDateLabel.setText("Zła data zwrotu!");
             return;
         }
 

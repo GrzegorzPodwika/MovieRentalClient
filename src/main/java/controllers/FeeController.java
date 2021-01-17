@@ -13,6 +13,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import model.Fee;
 import model.FeeData;
 import data_holders.UserHolder;
+import other.MovieUtils;
 import other.ServerStateChangeListener;
 import other.ServerTask;
 import retrofit2.Call;
@@ -23,6 +24,8 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
+
+import static other.MovieUtils.*;
 
 public class FeeController {
     @FXML
@@ -113,11 +116,9 @@ public class FeeController {
     }
 
     private void setTotalAmountToMustBePaid() {
-        for (Fee fee : allFees) {
-            totalAmountToPay += fee.getRentFee();
-        }
+        totalAmountToPay = allFees.stream().mapToDouble(Fee::getRentFee).sum();
 
-        amountToBePaidLabel.setText(String.valueOf(totalAmountToPay));
+        amountToBePaidLabel.setText(roundOffToStr(totalAmountToPay));
     }
 
 }

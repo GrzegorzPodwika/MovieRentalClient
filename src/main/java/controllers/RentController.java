@@ -34,6 +34,7 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import static other.Constants.RENT_DETAILS_DIALOG;
+import static other.MovieUtils.*;
 
 public class RentController {
 
@@ -58,10 +59,11 @@ public class RentController {
     @FXML public Button searchButton;
     @FXML public Button rentMovieButton;
 
-    private final ObservableList<MovieData> observableMovies = FXCollections.observableArrayList();
     private final RetrofitClient retrofitClient = new RetrofitClient();
     private MovieService movieService;
+    private final ObservableList<MovieData> observableMovies = FXCollections.observableArrayList();
     private List<MovieData> listOfMovieData;
+    private List<Movie> allMovies;
     private Integer userId;
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
@@ -70,6 +72,8 @@ public class RentController {
         initObservationOfServerAvailability();
         initMovieService();
         initTableColumns();
+        setUpChangeValueInComboBoxListener();
+        setUpSearchLabelListener();
         fetchUserIdFromUserHolder();
         fetchAllMoviesFromDb();
     }
@@ -103,6 +107,44 @@ public class RentController {
         tableFee.setCellValueFactory(new PropertyValueFactory<>("TableFee"));
     }
 
+    private void setUpChangeValueInComboBoxListener() {
+        filterMovie.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
+            updateMoviesAccordingToGenreInComboBox(newValue);
+            searchLabel.clear();
+        });
+    }
+
+    private void updateMoviesAccordingToGenreInComboBox(String newValue) {
+        if (newValue.equals("all")){
+            updateObservableMovies(listOfMovieData);
+        } else {
+            Thread thread = new Thread(() -> {
+                List<MovieData> filteredMovieData = listOfMovieData.stream().filter(mov -> mov.getTableGenre().equals(newValue)).collect(Collectors.toList());
+                Platform.runLater(() -> updateObservableMovies(filteredMovieData));
+            });
+            thread.start();
+        }
+    }
+
+    private void setUpSearchLabelListener() {
+        searchLabel.textProperty().addListener((observable, oldValue, newValue) -> {
+            updateMoviesAccordingToSearchLabel(newValue);
+        });
+    }
+
+    private void updateMoviesAccordingToSearchLabel(String newValue) {
+        List<MovieData> currentListInTable = moviesTableView.getItems();
+        if (newValue == null || newValue.isEmpty()) {
+            updateMoviesAccordingToGenreInComboBox(filterMovie.getValue());
+        } else {
+            Thread thread = new Thread(() -> {
+                List<MovieData> filteredMovieData = currentListInTable.stream().filter(mov -> containsIgnoreCase(mov.getTableName(), newValue)).collect(Collectors.toList());
+                Platform.runLater(() -> updateObservableMovies(filteredMovieData));
+            });
+            thread.start();
+        }
+    }
+
     private void fetchUserIdFromUserHolder() {
         UserHolder userHolder = UserHolder.getINSTANCE();
         userId = userHolder.getUserId();
@@ -114,7 +156,7 @@ public class RentController {
             @Override
             public void onResponse(Call<List<Movie>> call, Response<List<Movie>> response) {
                 if (response.isSuccessful()) {
-                    var allMovies = response.body();
+                    allMovies = response.body();
 
                     if (allMovies != null) {
                         listOfMovieData = transformToDataFormat(allMovies);
@@ -193,6 +235,7 @@ public class RentController {
             showWindowWithRentalDetails(selectedMovie);
         } else {
             System.out.println("Selected movie = null");
+            showWarningDialog();
         }
     }
 
@@ -224,6 +267,15 @@ public class RentController {
         }
     }
 
+    private void showWarningDialog() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Ostrzeżenie");
+        alert.setHeaderText(null);
+        alert.setContentText("Zaznacz film!");
+
+        alert.showAndWait();
+    }
+
     private void fetchChosenDates(Movie movie) {
         DateHolder dateHolder = DateHolder.getINSTANCE();
 
@@ -233,6 +285,7 @@ public class RentController {
         if (rentDate != null && returnDate != null) {
             postRentMovie(movie, rentDate, returnDate);
             clearFieldsInDateHolder(dateHolder);
+            showConfirmDialog();
         }
     }
 
@@ -240,6 +293,7 @@ public class RentController {
         // This method doesn't include last day, so we add 1 day to result.
         long daysBetween = ChronoUnit.DAYS.between(rentDate, returnDate) + 1;
         double totalFee = daysBetween * movie.getFeePerDay();
+        totalFee = roundOff(totalFee);
 
         RentedMovie rentedMovie = new RentedMovie(userId, movie.getMovieId(), rentDate.format(DateTimeFormatter.ISO_LOCAL_DATE), returnDate.format(DateTimeFormatter.ISO_LOCAL_DATE), totalFee);
 
@@ -258,6 +312,15 @@ public class RentController {
     private void clearFieldsInDateHolder(DateHolder dateHolder) {
         dateHolder.setRentDate(null);
         dateHolder.setReturnDate(null);
+    }
+
+    private void showConfirmDialog() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Info");
+        alert.setHeaderText(null);
+        alert.setContentText("Pomyślnie dodano rezerwację!");
+
+        alert.showAndWait();
     }
 
     private Movie transformToPlainMovie(MovieData movieData) {
